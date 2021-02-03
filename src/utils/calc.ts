@@ -76,14 +76,17 @@ export const getWeatherDividedByDays: GetWeatherDividedByDaysFunc = () => ({
 })
 
 export const groupWeatherByDay: GroupWeatherByDayFunc = (newWeatherList) => {
+  let weatherByDays = getWeatherDividedByDays()
+  let weatherList: CustomWeatherItemType[] = []
   try {
-    let weatherByDays = getWeatherDividedByDays()
-    let weatherList: CustomWeatherItemType[] = []
-    newWeatherList.map(weather => {
-      let date = jsCoreDateCreator(weather.dt_txt)
-      weatherByDays[date.getDay()].list.push(weather)
-      weatherByDays[date.getDay()].weekDay = getWeekDay(date)
-    })
+    try {
+      newWeatherList.map(weather => {
+        let date = jsCoreDateCreator(weather.dt_txt)
+        weatherByDays[date.getDay()].list.push(weather)
+        weatherByDays[date.getDay()].weekDay = getWeekDay(date)
+      })
+    }
+    catch(e){}
     Object.entries(weatherByDays).map(weather => {
       const [key, value] = weather as [string, CustomWeatherItemType]
       weatherByDays[Number(key)].avg = Math.round(calcAvgTemp(value.list))
@@ -92,6 +95,6 @@ export const groupWeatherByDay: GroupWeatherByDayFunc = (newWeatherList) => {
     return weatherList
   }
   catch(e){
-    return []
+    return weatherList
   }
 }
